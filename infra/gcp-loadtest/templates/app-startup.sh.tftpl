@@ -15,6 +15,9 @@ SCHEMA_READY_OBJECT="${schema_ready_object}"
 WORKDIR="/opt/openchat"
 LOG_DIR="/var/log/openchat-loadtest"
 APP_INTERNAL_IP="$(hostname -I | awk '{print $1}')"
+APP_DB_USERNAME="$${APP_DB_USERNAME:-openchat_loadtest_user}"
+APP_DB_PASSWORD="$${APP_DB_PASSWORD:-change-me-loadtest-db-password}"
+APP_JWT_SECRET="$${APP_JWT_SECRET:-change-me-loadtest-jwt-secret-32-chars-minimum}"
 
 mkdir -p "$LOG_DIR"
 exec > >(tee -a "$LOG_DIR/app-startup.log") 2>&1
@@ -144,11 +147,11 @@ docker run -d \
   -e DB_HOST="$MYSQL_IP" \
   -e DB_PORT=3306 \
   -e DB_NAME=openchat \
-  -e DB_USERNAME=openchat \
-  -e DB_PASSWORD=openchat \
+  -e DB_USERNAME="$APP_DB_USERNAME" \
+  -e DB_PASSWORD="$APP_DB_PASSWORD" \
   -e SPRING_DATASOURCE_URL="jdbc:mysql://$MYSQL_IP:3306/openchat?useSSL=false&serverTimezone=Asia/Seoul&allowPublicKeyRetrieval=true" \
-  -e SPRING_DATASOURCE_USERNAME=openchat \
-  -e SPRING_DATASOURCE_PASSWORD=openchat \
+  -e SPRING_DATASOURCE_USERNAME="$APP_DB_USERNAME" \
+  -e SPRING_DATASOURCE_PASSWORD="$APP_DB_PASSWORD" \
   -e SPRING_JPA_HIBERNATE_DDL_AUTO="$SPRING_JPA_HIBERNATE_DDL_AUTO" \
   -e REDIS_HOST="$REDIS_IP" \
   -e REDIS_PORT=6379 \
@@ -159,7 +162,7 @@ docker run -d \
   -e APP_ROLE="$APP_ROLE" \
   -e INSTANCE_ID="gcp-$APP_ROLE-$APP_INDEX" \
   -e APP_INSTANCE_ID="gcp-$APP_ROLE-$APP_INDEX" \
-  -e JWT_SECRET=loadtest-secret-key-minimum-32-characters \
+  -e JWT_SECRET="$APP_JWT_SECRET" \
   -e CORS_ORIGINS=http://localhost:3000,http://127.0.0.1:3000 \
   -e SERVER_TOMCAT_MAX_CONNECTIONS=20000 \
   -e SERVER_TOMCAT_ACCEPT_COUNT=2000 \

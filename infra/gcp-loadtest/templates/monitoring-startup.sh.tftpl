@@ -11,6 +11,10 @@ REDIS_IP="${redis_ip}"
 WORKDIR="/opt/openchat"
 MONITOR_DIR="/opt/openchat-monitoring"
 LOG_DIR="/var/log/openchat-loadtest"
+MONITORING_DB_USERNAME="$${MONITORING_DB_USERNAME:-openchat_loadtest_user}"
+MONITORING_DB_PASSWORD="$${MONITORING_DB_PASSWORD:-change-me-loadtest-db-password}"
+GRAFANA_ADMIN_USER_VALUE="$${GRAFANA_ADMIN_USER_VALUE:-openchat_local_admin}"
+GRAFANA_ADMIN_PASSWORD_VALUE="$${GRAFANA_ADMIN_PASSWORD_VALUE:-change-me-local-grafana-password}"
 
 mkdir -p "$LOG_DIR" "$MONITOR_DIR/prometheus" "$MONITOR_DIR/grafana/provisioning/datasources" "$MONITOR_DIR/grafana/provisioning/dashboards"
 exec > >(tee -a "$LOG_DIR/monitoring-startup.log") 2>&1
@@ -153,7 +157,7 @@ docker run -d \
   --name openchat-mysql-exporter \
   --restart unless-stopped \
   --network host \
-  -e DATA_SOURCE_NAME="openchat:openchat@($MYSQL_IP:3306)/openchat" \
+  -e DATA_SOURCE_NAME="$MONITORING_DB_USERNAME:$MONITORING_DB_PASSWORD@($MYSQL_IP:3306)/openchat" \
   prom/mysqld-exporter:v0.14.0
 
 docker run -d \
@@ -176,8 +180,8 @@ docker run -d \
   --name openchat-grafana \
   --restart unless-stopped \
   --network host \
-  -e GF_SECURITY_ADMIN_USER=admin \
-  -e GF_SECURITY_ADMIN_PASSWORD=admin \
+  -e GF_SECURITY_ADMIN_USER="$GRAFANA_ADMIN_USER_VALUE" \
+  -e GF_SECURITY_ADMIN_PASSWORD="$GRAFANA_ADMIN_PASSWORD_VALUE" \
   -e GF_AUTH_ANONYMOUS_ENABLED=true \
   -e GF_AUTH_ANONYMOUS_ORG_ROLE=Viewer \
   -v "$MONITOR_DIR/grafana/provisioning:/etc/grafana/provisioning:ro" \

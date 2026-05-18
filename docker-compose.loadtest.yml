@@ -4,18 +4,18 @@ x-app-env: &app-env
   DB_HOST: mysql
   DB_PORT: 3306
   DB_NAME: openchat
-  DB_USERNAME: openchat
-  DB_PASSWORD: openchat
+  DB_USERNAME: ${MYSQL_USER:-openchat_loadtest_user}
+  DB_PASSWORD: ${MYSQL_PASSWORD:-change-me-loadtest-db-password}
   SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/openchat?useSSL=false&serverTimezone=Asia/Seoul&allowPublicKeyRetrieval=true
-  SPRING_DATASOURCE_USERNAME: openchat
-  SPRING_DATASOURCE_PASSWORD: openchat
+  SPRING_DATASOURCE_USERNAME: ${MYSQL_USER:-openchat_loadtest_user}
+  SPRING_DATASOURCE_PASSWORD: ${MYSQL_PASSWORD:-change-me-loadtest-db-password}
   REDIS_HOST: redis
   REDIS_PORT: 6379
   SPRING_DATA_REDIS_HOST: redis
   SPRING_DATA_REDIS_PORT: 6379
   APP_KAFKA_ENABLED: "false"
   KAFKA_SERVERS: kafka:9092
-  JWT_SECRET: loadtest-secret-key-minimum-32-characters
+  JWT_SECRET: ${JWT_SECRET:-change-me-loadtest-jwt-secret-32-chars-minimum}
   CORS_ORIGINS: http://localhost:3000,http://127.0.0.1:3000
   JAVA_OPTS: -XX:MaxRAMPercentage=70 -XX:+UseG1GC -Djava.security.egd=file:/dev/./urandom
 
@@ -50,15 +50,15 @@ services:
     image: mysql:8.0
     container_name: openchat-loadtest-mysql
     environment:
-      MYSQL_ROOT_PASSWORD: root
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-change-me-loadtest-root-password}
       MYSQL_DATABASE: openchat
-      MYSQL_USER: openchat
-      MYSQL_PASSWORD: openchat
+      MYSQL_USER: ${MYSQL_USER:-openchat_loadtest_user}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-change-me-loadtest-db-password}
     volumes:
       - loadtest_mysql_data:/var/lib/mysql
     command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-uroot", "-proot"]
+      test: ["CMD-SHELL", 'mysqladmin ping -h 127.0.0.1 -u"$${MYSQL_USER}" -p"$${MYSQL_PASSWORD}" --silent']
       interval: 5s
       timeout: 3s
       retries: 30

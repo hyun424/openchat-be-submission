@@ -16,7 +16,7 @@ import static org.mockito.Mockito.verify;
 class JwtAuthenticationFilterTest {
 
     private final JwtProvider jwtProvider = new JwtProvider(
-            "default-dev-secret-key-minimum-32-chars",
+            "test-only-jwt-secret-change-me-32-chars",
             43_200_000L
     );
     private final JwtAuthenticationFilter filter = new JwtAuthenticationFilter(jwtProvider);

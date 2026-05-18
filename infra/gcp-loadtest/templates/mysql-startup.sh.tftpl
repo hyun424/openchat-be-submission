@@ -6,6 +6,9 @@ RUN_ID="${run_id}"
 BUCKET_NAME="${bucket_name}"
 LOG_DIR="/var/log/openchat-loadtest"
 DATA_DIR="/var/lib/openchat-mysql"
+MYSQL_ROOT_PASSWORD_VALUE="$${MYSQL_ROOT_PASSWORD_VALUE:-change-me-loadtest-root-password}"
+MYSQL_USER_VALUE="$${MYSQL_USER_VALUE:-openchat_loadtest_user}"
+MYSQL_PASSWORD_VALUE="$${MYSQL_PASSWORD_VALUE:-change-me-loadtest-db-password}"
 
 mkdir -p "$LOG_DIR" "$DATA_DIR"
 exec > >(tee -a "$LOG_DIR/mysql-startup.log") 2>&1
@@ -32,17 +35,17 @@ docker run -d \
   --restart unless-stopped \
   -p 3306:3306 \
   -v "$DATA_DIR:/var/lib/mysql" \
-  -e MYSQL_ROOT_PASSWORD=root \
+  -e MYSQL_ROOT_PASSWORD="$MYSQL_ROOT_PASSWORD_VALUE" \
   -e MYSQL_DATABASE=openchat \
-  -e MYSQL_USER=openchat \
-  -e MYSQL_PASSWORD=openchat \
+  -e MYSQL_USER="$MYSQL_USER_VALUE" \
+  -e MYSQL_PASSWORD="$MYSQL_PASSWORD_VALUE" \
   mysql:8.0 \
   --character-set-server=utf8mb4 \
   --collation-server=utf8mb4_unicode_ci
 
 echo "[mysql] waiting for mysqladmin ping"
 for attempt in $(seq 1 120); do
-  if docker exec openchat-mysql mysqladmin ping -h 127.0.0.1 -uroot -proot --silent; then
+  if docker exec openchat-mysql mysqladmin ping -h 127.0.0.1 -u"$MYSQL_USER_VALUE" -p"$MYSQL_PASSWORD_VALUE" --silent; then
     echo "[mysql] healthy"
     exit 0
   fi

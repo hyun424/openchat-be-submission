@@ -38,6 +38,8 @@ K6_NODE_DRAIN_AFTER_SECONDS="${k6_node_drain_after_seconds}"
 K6_NODE_DRAIN_LIMIT="${k6_node_drain_limit}"
 K6_NODE_DRAIN_RETRY_AFTER_MS="${k6_node_drain_retry_after_ms}"
 REALTIME_WORKLOAD_SUMMARY_ENABLED="${realtime_workload_summary_enabled}"
+K6_DB_USERNAME="$${K6_DB_USERNAME:-openchat_loadtest_user}"
+K6_DB_PASSWORD="$${K6_DB_PASSWORD:-change-me-loadtest-db-password}"
 CONNECT_RAMP_SECONDS="${connect_ramp_seconds}"
 HOT_ROOMS="${hot_rooms}"
 VUS_PER_ROOM="${vus_per_room}"
@@ -123,8 +125,8 @@ collect_db_message_count() {
   db_count=$(mysql \
     --connect-timeout=5 \
     -h "$MYSQL_INTERNAL_IP" \
-    -uopenchat \
-    -popenchat \
+    -u"$K6_DB_USERNAME" \
+    -p"$K6_DB_PASSWORD" \
     -D openchat \
     -N -B \
     -e "SELECT COUNT(*) FROM chat_message WHERE client_message_id LIKE '$${safe_label}-%';" 2>"$output_dir/$${safe_label}-db-message-count.err" || true)
@@ -155,8 +157,8 @@ collect_room_partition_state_dump() {
   mysql \
     --connect-timeout=5 \
     -h "$MYSQL_INTERNAL_IP" \
-    -uopenchat \
-    -popenchat \
+    -u"$K6_DB_USERNAME" \
+    -p"$K6_DB_PASSWORD" \
     -D openchat \
     -B \
     -e "SELECT room_id, partition_count, version, status, draining_partitions, updated_at, updated_by FROM room_partition_state ORDER BY updated_at DESC, room_id;" \

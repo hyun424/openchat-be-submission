@@ -34,8 +34,8 @@ services:
     ports:
       - "3001:3000"
     environment:
-      GF_SECURITY_ADMIN_USER: admin
-      GF_SECURITY_ADMIN_PASSWORD: admin
+      GF_SECURITY_ADMIN_USER: ${GRAFANA_ADMIN_USER:-openchat_local_admin}
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:-change-me-local-grafana-password}
       GF_AUTH_ANONYMOUS_ENABLED: "true"
       GF_AUTH_ANONYMOUS_ORG_ROLE: Viewer
     volumes:
@@ -52,7 +52,7 @@ services:
     ports:
       - "9104:9104"
     environment:
-      DATA_SOURCE_NAME: "openchat:openchat@(openchat-loadtest-mysql:3306)/openchat"
+      DATA_SOURCE_NAME: "${MYSQL_USER:-openchat_loadtest_user}:${MYSQL_PASSWORD:-change-me-loadtest-db-password}@(openchat-loadtest-mysql:3306)/openchat"
     extra_hosts:
       - "host.docker.internal:host-gateway"
 
