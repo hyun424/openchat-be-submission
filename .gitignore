@@ -23,3 +23,9 @@ infra/gcp-loadtest/terraform.tfvars
 .DS_Store
 .idea/
 .vscode/
+
+# Local agent/workflow state
+.omx/
+.omx-runtime/
+.codex/
+.agents/
