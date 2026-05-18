@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+# WARNING: This comparison helper uses git stash and git clean inside the current worktree.
+# Run it only in a disposable checkout or after confirming the working tree can be restored.
 # =============================================================================
 # run-comparison.sh — Before/After 성능 비교 자동화
 #

@@ -89,5 +89,5 @@ public class RoomMember {
         return leftAt == null && status == MemberStatus.PENDING;
     }
 
-    // TODO: 추후 Redis 세션 기반 참여 관리로 교체 가능
+    // Future extension point: replace with Redis session-backed participation tracking if needed.
 }

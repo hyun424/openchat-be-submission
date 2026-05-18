@@ -1,3 +1,4 @@
+# Load-test-only disposable credentials; do not reuse for shared or production environments.
 x-app-env: &app-env
   SPRING_PROFILES_ACTIVE: loadtest
   DB_HOST: mysql

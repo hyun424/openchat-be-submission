@@ -1,6 +1,7 @@
 version: '3.8'
 
 services:
+  # Local-only disposable credentials; replace for any shared environment.
   mysql:
     image: mysql:8.0
     container_name: openchat-mysql

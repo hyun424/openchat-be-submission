@@ -1,4 +1,5 @@
 services:
+  # Local-only disposable monitoring credentials; replace for shared environments.
   # ── InfluxDB: k6 결과 저장소 ──
   influxdb:
     image: influxdb:1.8
